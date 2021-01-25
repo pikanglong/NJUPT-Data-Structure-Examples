@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #define ERROR 0
 #define OK 1
@@ -119,7 +119,7 @@ int main()
     int i;
     SeqList list;
     Init(&list, 10);
-    for (i = 0; i < 10; i++)
+    for (i = 0; i < 9; i++)
         Insert(&list, i - 1, i);
     Output(list);
     Delete(&list, 0);

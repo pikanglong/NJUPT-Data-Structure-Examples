@@ -17,85 +17,72 @@ typedef struct Node
 } Node;
 typedef struct
 {
-    struct Node *first;
+    struct Node *head;
     int n;
-} SingleList;
+} HeaderList;
 
-Status Init(SingleList *L)
+Status Init(HeaderList *h)
 {
-    L->first = NULL;
-    L->n = 0;
+    h->head = (Node *)malloc(sizeof(Node));
+    if (!h->head)
+        return ERROR;
+    h->head->link = NULL;
+    h->n = 0;
     return OK;
 }
 
-Status Find(SingleList L, int i, ElemType *x)
+Status Find(HeaderList h, int i, ElemType *x)
 {
     Node *p;
     int j;
-    if (i < 0 || i > L.n - 1)
+    if (i < 0 || i > h.n - 1)
         return ERROR;
-    p = L.first;
+    p = h.head->link;
     for (j = 0; j < i; j++)
         p = p->link;
     *x = p->element;
     return OK;
 }
 
-Status Insert(SingleList *L, int i, ElemType x)
+Status Insert(HeaderList *h, int i, ElemType x)
 {
-    Node *p, *q;
-    int j;
-    if (i < -1 || i > L->n - 1)
+    if (i < -1 || i > h->n - 1)
         return ERROR;
-    p = L->first;
-    for (j = 0; j < i; j++)
+    Node *p = h->head;
+    for (int j = 0; j <= i; j++)
         p = p->link;
-    q = (Node *)malloc(sizeof(Node));
+    Node *q = (Node *)malloc(sizeof(Node));
     q->element = x;
-    if (i > -1)
-    {
-        q->link = p->link;
-        p->link = q;
-    }
-    else
-    {
-        q->link = L->first;
-        L->first = q;
-    }
-    L->n++;
+    q->link = p->link;
+    p->link = q;
+    h->n++;
     return OK;
 }
 
-Status Delete(SingleList *L, int i)
+Status Delete(HeaderList *h, int i)
 {
     int j;
     Node *p, *q;
-    if (!L->n)
+    if (!h->n)
         return ERROR;
-    if (i < 0 || i > L->n - 1)
+    if (i < 0 || i > h->n - 1)
         return ERROR;
-    q = L->first;
-    p = L->first;
-    for (j = 0; j < i - 1; j++)
+    q = h->head;
+    for (j = 0; j < i; j++)
         q = q->link;
-    if (i == 0)
-        L->first = L->first->link;
-    else
-    {
-        p = q->link;
-        q->link = p->link;
-    }
+    p = q->link;
+    q->link = p->link;
     free(p);
-    L->n--;
+    h->n--;
     return OK;
 }
 
-Status Output(SingleList L)
+Status Output(HeaderList h)
 {
     Node *p;
-    if (!L.n)
+    if (!h.n)
         return ERROR;
-    p = L.first;
+    p = h.head->link;
     while (p)
     {
         printf("%d ", p->element);
@@ -104,22 +91,24 @@ Status Output(SingleList L)
     return OK;
 }
 
-void Destroy(SingleList *L)
+void Destroy(HeaderList *h)
 {
-    Node *p;
-    while (L->first)
+    Node *p, *q;
+    q = h->head->link;
+    while (q)
     {
-        p = L->first->link;
-        free(L->first);
-        L->first = p;
+        p = q->link;
+        free(q);
+        q = p;
     }
+    free(h->head);
 }
 
 int main()
 {
     int i;
     int x;
-    SingleList list;
+    HeaderList list;
     Init(&list);
     for (i = 0; i < 9; i++)
         Insert(&list, i - 1, i);
@@ -131,4 +120,5 @@ int main()
     Find(list, 0, &x);
     printf("\nthe value is: %d", x);
     Destroy(&list);
+    return 0;
 }
